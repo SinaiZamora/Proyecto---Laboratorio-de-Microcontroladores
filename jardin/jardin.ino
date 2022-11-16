@@ -1,43 +1,41 @@
-#include <DHT.h>
-#include <DHT_U.h>
-
-int temp_sensor = 9;
-int water_pulp = 8;
-int led = 7;
-int temp;
-int hum;
-
-DHT dht(temp_sensor, DHT11);
+int water_pulp = 13;
+int soil_moisture = 0
+const int dry_value = 448;
+const int wet_value = 190;
+int intervals = (dry_value - wet_value)/3;
 
 
 void setup() {
-  pinMode(water_pulp, OUTPUT)
-  Serial.begin(9600);
-  dht.begin();
+
+ Serial.begin(9600);
+ pinMode(water_pulp,OUTPUT);
 
 }
 
 void loop() {
-  temp = dht.readTemperature();
-  hum = dht.readHumidity();
 
-  Serial.print("Temperatura: ");
-  Serial.print(temp);
-  Serial.print("C");
-  Serial.print("Humedad: ");
-  Serial.print(hum);
-  Serial.print("%");
-  delay(500);
+soil_moisture = analogRead(A0);//se lee el valor de la humedad del suelo
+delay(500);
 
-  if (hum < 5){
-    digitalWrite(water_pulp, LOW);
-    delay(5000);
-  }
+if(soil_moisture > wet_value && soil_moisture < (wet_value + intervals)){
+  Serial.println("Estado de la tierra: Muy mojada");
+}
 
-  if (temp < 10){
-    digitalWrite(led, HIGH;)
-  }
+else if(soil_moisture > (wet_value + intervals) && soil_moisture < (dry_value - intervals)){
+ Serial.println("Estado de la tierra: Humeda");
+}
 
+else if(soil_moisture < dry_value && soil_moisture > (dry_value - intervals)){
+  Serial.println("Estado de la tierra: Seca");
+  delay(1000);
+  Serial.println("Encendiendo water_pulp de agua...");
+  delay(1000);
+  Serial.println("Suministrando agua");
+  digitalWrite(water_pulp, HIGH); //se enciende la bomba con el rele
+  delay(5000);
+  digitalWrite(water_pulp, LOW); ..se apaga la bomba
+}
 
+delay(100);
 
 }
